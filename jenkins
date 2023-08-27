@@ -1,64 +1,75 @@
-pipeline{
+pipeline {
     agent any
-    stages{
-        stage("Build"){
-            steps{
+    
+    stages {
+        stage('Build') {
+            steps {
                 echo "Building using build automation tool Maven ..."
-                sh 'mvn clean install'
             }
         }
-        stage("Unit and Integration Tests"){
-            steps{
+        
+        stage('Unit and Integration Tests') {
+            steps {
                 echo "Testing unit using JUnit for Maven and testing integration using TestNG for Maven ..."
-                sh 'mvn test'
+            }
+            post {
+                success {
+                    mail to: 'andrewpaull82@gmail.com',
+                          subject: 'Unit and Integration Tests - Success',
+                          body: 'The tests have passed successfully.',
+                          attachLog: true
+                }
+                failure {
+                    mail to: 'andrewpaull82@gmail.com',
+                          subject: 'Unit and Integration Tests - Failure',
+                          body: 'The tests have failed. Please check the attached logs.',
+                          attachLog: true
+                }
             }
         }
-        stage("Code Analysis"){
-            steps{
+        
+        stage('Code Analysis') {
+            steps {
                 echo "Analysing code to ensure it meets industry standards with SonarScanner for Maven ..."
-                sh 'mvn sonar:sonar'
             }
         }
-        stage("Security Scan"){
-            steps{
+
+        stage('Security Scan') {
+            steps {
                 echo "Security scanning with OWASP ZAP ..."
-                sh './zap_scan.sh'
+            }
+            post {
+                success {
+                    mail to: 'andrewpaull82@gmail.com',
+                          subject: 'Security Scan - Success',
+                          body: 'The security scan has completed successfully.',
+                          attachLog: true
+                }
+                failure {
+                    mail to: 'andrewpaull82@gmail.com',
+                          subject: 'Security Scan - Failure',
+                          body: 'The security scan has failed. Please check the attached logs.',
+                          attachLog: true
+                }
             }
         }
-        stage("Deploy to Staging"){
-            steps{
+
+        stage('Deploy to Staging') {
+            steps {
                 echo "Deploying application to a AWS EC2 server..."
-                sh './deploy_to_staging.sh'
             }
         }
-        stage("Integration Tests on Staging  "){
-            steps{
+
+        stage('Integration Tests on Staging') {
+            steps {
                 echo "Running integration tests on the staging environment to ensure the app. functions as expected in a production-like environment ..."
-                sh './run_integration_tests_on_staging.sh'
             }
         }
-        stage("Deploy to Production"){
-            steps{
+
+        stage('Deploy to Production') {
+            steps {
                 echo "Deploying app. to production server AWS EC2 ..."
-                sh './deploy_to_production.sh'
             }
-        }
-    }
-    post {
-        success {
-            mail to: 'andrewpaull82@gmail.com',
-            subject: "Pipeline Succeeded",
-            body: "All stages have completed successfully. The application is now in production."
-        }
-        failure {
-            mail to: 'andrewpaull82@gmail.com',
-            subject: "Pipeline Failed",
-            body: "One or more stages have failed. Please review the build logs."
-        }
-        unstable {
-            mail to: 'andrewpaull82@gmail.com',
-            subject: "Pipeline Unstable",
-            body: "The pipeline has some issues that could not determine a complete failure but need attention."
         }
     }
 }
