@@ -16,13 +16,13 @@ pipeline {
                 success {
                     mail to: 'andrewpaull82@gmail.com',
                     subject: 'Unit and Integration Tests - Success',
-                    body: 'The tests have passed successfully.',
+                    body: 'The tests have passed successfully.'
                     // attachLog: true
                 }
                 failure {
                     mail to: 'andrewpaull82@gmail.com',
                     subject: 'Unit and Integration Tests - Failure',
-                    body: 'The tests have failed. Please check the attached logs.',
+                    body: 'The tests have failed. Please check the attached logs.'
                     // attachLog: true
                 }
             }
@@ -44,13 +44,13 @@ pipeline {
                 success {
                     mail to: 'andrewpaull82@gmail.com',
                     subject: 'Security Scan - Success',
-                    body: 'The security scan has completed successfully.',
+                    body: 'The security scan has completed successfully.'
                     // attachLog: true
                 }
                 failure {
                     mail to: 'andrewpaull82@gmail.com',
                     subject: 'Security Scan - Failure',
-                    body: 'The security scan has failed. Please check the attached logs.',
+                    body: 'The security scan has failed. Please check the attached logs.'
                     // attachLog: true
                 }
             }
