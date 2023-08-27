@@ -1,75 +1,77 @@
-
 pipeline {
     agent any
+    
     stages {
         stage('Build') {
             steps {
                 echo "Building using build automation tool Maven ..."
             }
         }
-    }
         
-    stage('Unit and Integration Tests') {
-        steps {
-            echo "Testing unit using JUnit for Maven and testing integration using TestNG for Maven ..."
-        }
-        post {
-            success {
-                mail to: 'andrewpaull82@gmail.com',
-                subject: 'Unit and Integration Tests - Success',
-                body: 'The tests have passed successfully.',
-                attachLog: true
+        stage('Unit and Integration Tests') {
+            steps {
+                echo "Testing unit using JUnit for Maven and testing integration using TestNG for Maven ..."
             }
-            failure {
-                mail to: 'andrewpaull82@gmail.com',
-                subject: 'Unit and Integration Tests - Failure',
-                body: 'The tests have failed. Please check the attached logs.',
-                attachLog: true
-            }
-        }
-    }
-        
-    stage('Code Analysis') {
-        steps {
-            echo "Analysing code to ensure it meets industry standards with SonarScanner for Maven ..."
-        }
-    }
-
-    stage('Security Scan') {
-        steps {
-            echo "Security scanning with OWASP ZAP ..."
-        }
-        post {
-            success {
-                mail to: 'andrewpaull82@gmail.com',
-                subject: 'Security Scan - Success',
-                body: 'The security scan has completed successfully.',
-                attachLog: true
-            }
-            failure {
-                mail to: 'andrewpaull82@gmail.com',
-                subject: 'Security Scan - Failure',
-                body: 'The security scan has failed. Please check the attached logs.',
-                attachLog: true
+            post {
+                success {
+                    mail to: 'andrewpaull82@gmail.com',
+                    subject: 'Unit and Integration Tests - Success',
+                    body: 'The tests have passed successfully.',
+                    // attachLog: true
+                }
+                failure {
+                    mail to: 'andrewpaull82@gmail.com',
+                    subject: 'Unit and Integration Tests - Failure',
+                    body: 'The tests have failed. Please check the attached logs.',
+                    // attachLog: true
+                }
             }
         }
-    }
 
-    stage('Deploy to Staging') {
-        steps {
-            echo "Deploying application to a AWS EC2 server..."
+        stage('Code Analysis') {
+            steps {
+                echo "Analysing code to ensure it meets industry standards with SonarScanner for Maven ..."
+                // sh 'mvn sonar:sonar'
+            }
         }
-    }
 
-    stage('Integration Tests on Staging') {
-        steps {
-            echo "Running integration tests on the staging environment to ensure the app. functions as expected in a production-like environment ..."
+        stage('Security Scan') {
+            steps {
+                echo "Security scanning with OWASP ZAP ..."
+                // Implement the security scanning shell command
+            }
+            post {
+                success {
+                    mail to: 'andrewpaull82@gmail.com',
+                    subject: 'Security Scan - Success',
+                    body: 'The security scan has completed successfully.',
+                    // attachLog: true
+                }
+                failure {
+                    mail to: 'andrewpaull82@gmail.com',
+                    subject: 'Security Scan - Failure',
+                    body: 'The security scan has failed. Please check the attached logs.',
+                    // attachLog: true
+                }
+            }
         }
-    }
 
-    stage('Deploy to Production') {
-        steps {
-            echo "Deploying app. to production server AWS EC2 ..."
+        stage('Deploy to Staging') {
+            steps {
+                echo "Deploying application to an AWS EC2 server..."
+            }
+        }
+
+        stage('Integration Tests on Staging') {
+            steps {
+                echo "Running integration tests on the staging environment to ensure the app. functions as expected in a production-like environment ..."
+            }
+        }
+
+        stage('Deploy to Production') {
+            steps {
+                echo "Deploying app. to production server AWS EC2 ..."
+            }
         }
     }
 }
