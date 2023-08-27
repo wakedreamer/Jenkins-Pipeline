@@ -3,30 +3,62 @@ pipeline{
     stages{
         stage("Build"){
             steps{
-                echo "Building..."
-            }
-            post{
-                always{
-                    mail to: 'andrewpaull82@gmail.com',
-                    subject: "Build Status Email",
-                    body: "Build log attached"
-                }
+                echo "Building using build automation tool Maven ..."
+                sh 'mvn clean install'
             }
         }
-        stage("Test"){
+        stage("Unit and Integration Tests"){
             steps{
-                echo "Testing ..."
+                echo "Testing unit using JUnit for Maven and testing integration using TestNG for Maven ..."
+                sh 'mvn test'
             }
         }
-        stage("Deploy"){
+        stage("Code Analysis"){
             steps{
-                echo "Deploying ..."
+                echo "Analysing code to ensure it meets industry standards with SonarScanner for Maven ..."
+                sh 'mvn sonar:sonar'
             }
         }
-        stage("Complete"){
+        stage("Security Scan"){
             steps{
-                echo "Completed"
+                echo "Security scanning with OWASP ZAP ..."
+                sh './zap_scan.sh'
             }
+        }
+        stage("Deploy to Staging"){
+            steps{
+                echo "Deploying application to a AWS EC2 server..."
+                sh './deploy_to_staging.sh'
+            }
+        }
+        stage("Integration Tests on Staging  "){
+            steps{
+                echo "Running integration tests on the staging environment to ensure the app. functions as expected in a production-like environment ..."
+                sh './run_integration_tests_on_staging.sh'
+            }
+        }
+        stage("Deploy to Production"){
+            steps{
+                echo "Deploying app. to production server AWS EC2 ..."
+                sh './deploy_to_production.sh'
+            }
+        }
+    }
+    post {
+        success {
+            mail to: 'andrewpaull82@gmail.com',
+            subject: "Pipeline Succeeded",
+            body: "All stages have completed successfully. The application is now in production."
+        }
+        failure {
+            mail to: 'andrewpaull82@gmail.com',
+            subject: "Pipeline Failed",
+            body: "One or more stages have failed. Please review the build logs."
+        }
+        unstable {
+            mail to: 'andrewpaull82@gmail.com',
+            subject: "Pipeline Unstable",
+            body: "The pipeline has some issues that could not determine a complete failure but need attention."
         }
     }
 }
